@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 
 export async function GET(
+    _: Request,
     { params }: { params: Promise<{ handle: string }> }
 ) {
     const handle = (await params).handle
