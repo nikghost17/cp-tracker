@@ -2,12 +2,21 @@
 
 import { useEffect, useState } from 'react'
 
+interface CodeforcesProfileData {
+  rating: number;
+  rank: string;
+  maxRating: number;
+  maxRank: string;
+  handle: string;
+  [key: string]: any;
+}
+
 interface CodeforcesProfileProps {
   handle: string
 }
 
 export default function CodeforcesProfile({ handle }: CodeforcesProfileProps) {
-  const [data, setData] = useState<any>(null)
+  const [data, setData] = useState<CodeforcesProfileData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -27,8 +36,9 @@ export default function CodeforcesProfile({ handle }: CodeforcesProfileProps) {
           throw new Error(result.error || 'Failed to fetch Codeforces data')
         }
         setData(result)
-      } catch (err: any) {
-        setError(err.message)
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : String(err))
+        setData(null)
       } finally {
         setLoading(false)
       }

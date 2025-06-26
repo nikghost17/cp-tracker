@@ -4,7 +4,18 @@ import { updateProfile } from '@/app/profile/actions'
 import { type User } from '@supabase/supabase-js'
 import { useEffect, useState } from 'react'
 
-export default function ProfileForm({ user, profile }: { user: User, profile: any }) {
+interface Profile {
+  id: string;
+  full_name?: string;
+  username?: string;
+  website?: string;
+  codeforces_handle?: string;
+  leetcode_handle?: string;
+  codechef_handle?: string;
+  [key: string]: any;
+}
+
+export default function ProfileForm({ user, profile }: { user: User, profile: Profile }) {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<boolean>(false)
 

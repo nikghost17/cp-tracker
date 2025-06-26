@@ -5,8 +5,17 @@ interface CodeChefProfileProps {
   handle: string;
 }
 
+interface CodeChefProfileData {
+  rating: number;
+  stars: number;
+  highest_rating: number;
+  fully_solved_count: number;
+  country_rank?: number | string;
+  global_rank?: number | string;
+}
+
 export default function CodeChefProfile({ handle }: CodeChefProfileProps) {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<CodeChefProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

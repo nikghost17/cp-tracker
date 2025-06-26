@@ -11,6 +11,11 @@ interface LeetCodeProfile {
     ranking: number
 }
 
+interface SubmissionStat {
+    difficulty: string;
+    count: number;
+}
+
 export default function LeetCodeProfile({
     handle,
 }: {
@@ -35,10 +40,10 @@ export default function LeetCodeProfile({
                         throw new Error(data.error);
                     }
 
-                    const submissionStats = data.totalSubmissions || [];
-                    const easy = submissionStats.find((s: any) => s.difficulty === 'Easy');
-                    const medium = submissionStats.find((s: any) => s.difficulty === 'Medium');
-                    const hard = submissionStats.find((s: any) => s.difficulty === 'Hard');
+                    const submissionStats: SubmissionStat[] = data.totalSubmissions || [];
+                    const easy = submissionStats.find((s) => s.difficulty === 'Easy');
+                    const medium = submissionStats.find((s) => s.difficulty === 'Medium');
+                    const hard = submissionStats.find((s) => s.difficulty === 'Hard');
 
                     const profileData: LeetCodeProfile = {
                         totalSolved: data.totalSolved || 0,

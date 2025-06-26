@@ -1,8 +1,18 @@
 "use client";
 import { useState } from 'react';
-import Link from 'next/link';
 
-export default function ProblemsTableClient({ problems }: { problems: any[] }) {
+interface Problem {
+  id: string;
+  title: string;
+  platform: string;
+  status: string;
+  difficulty?: string;
+  notes?: string;
+  tags?: string[];
+  link?: string;
+}
+
+export default function ProblemsTableClient({ problems }: { problems: Problem[] }) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const getStatusColor = (status: string) => {

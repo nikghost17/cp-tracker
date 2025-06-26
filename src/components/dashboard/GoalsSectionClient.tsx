@@ -2,9 +2,17 @@
 import { useState } from 'react';
 import { incrementGoal, deleteGoal, editGoal } from '@/app/goals/actions';
 
-export default function GoalsSectionClient({ goals }: { goals: any[] }) {
+interface Goal {
+  id: string;
+  title: string;
+  target_count: number;
+  current_count: number;
+  target_date?: string | null;
+}
+
+export default function GoalsSectionClient({ goals }: { goals: Goal[] }) {
   const [loadingGoalId, setLoadingGoalId] = useState<string | null>(null);
-  const [localGoals, setLocalGoals] = useState(goals);
+  const [localGoals, setLocalGoals] = useState<Goal[]>(goals);
   const [editingGoalId, setEditingGoalId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<{ title: string; target_count: number; target_date: string | null }>({ title: '', target_count: 1, target_date: null });
 
@@ -32,7 +40,7 @@ export default function GoalsSectionClient({ goals }: { goals: any[] }) {
     setLoadingGoalId(null);
   };
 
-  const handleEdit = (goal: any) => {
+  const handleEdit = (goal: Goal) => {
     setEditingGoalId(goal.id);
     setEditForm({
       title: goal.title,
