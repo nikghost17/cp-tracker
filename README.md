@@ -37,3 +37,10 @@ Follow these steps to get the project running locally:
    ```bash
    git clone https://github.com/nikghost17/cp-tracker.git
    cd cp-tracker
+1. **Install dependencies**
+   ```bash
+   npm install
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/your-username/cp-tracker.git
+   cd cp-tracker
