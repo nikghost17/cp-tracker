@@ -2,9 +2,9 @@ import { NextResponse } from 'next/server'
 
 export async function GET(
     request: Request,
-    { params }: { params: { handle: string } }
+    { params }: { params: Promise<{ handle: string }> }
 ) {
-    const handle = params.handle
+    const handle = (await params).handle
 
     if (!handle) {
         return NextResponse.json(
