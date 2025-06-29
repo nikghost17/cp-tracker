@@ -37,10 +37,14 @@ Follow these steps to get the project running locally:
    ```bash
    git clone https://github.com/nikghost17/cp-tracker.git
    cd cp-tracker
-1. **Install dependencies**
+2. **Install dependencies**
    ```bash
    npm install
-1. **Clone the repository**
+3. **Set up environment variables**
    ```bash
-   git clone https://github.com/your-username/cp-tracker.git
-   cd cp-tracker
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+4. **Run the development server**
+   ```bash
+   npm run dev
+
