@@ -40,6 +40,8 @@
 
 
 import Link from 'next/link';
+import LogoutButton from './LogoutButton';
+import AuthButtons from './AuthButtons';
 
 const Header = () => {
   return (
@@ -84,12 +86,7 @@ const Header = () => {
               </Link>
             </li>
             <li>
-              <Link 
-                href="/auth/login" 
-                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 px-4 py-2 rounded-md font-medium transition-all duration-200 shadow-md hover:shadow-lg"
-              >
-                Login
-              </Link>
+              <AuthButtons />
             </li>
           </ul>
         </nav>
