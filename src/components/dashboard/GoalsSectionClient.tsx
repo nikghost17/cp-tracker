@@ -1,6 +1,7 @@
 "use client";
-import { useState } from 'react';
-import { incrementGoal, deleteGoal, editGoal } from '@/app/goals/actions';
+import { useState } from "react";
+import { incrementGoal, deleteGoal, editGoal } from "@/app/goals/actions";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Goal {
   id: string;
@@ -14,7 +15,11 @@ export default function GoalsSectionClient({ goals }: { goals: Goal[] }) {
   const [loadingGoalId, setLoadingGoalId] = useState<string | null>(null);
   const [localGoals, setLocalGoals] = useState<Goal[]>(goals);
   const [editingGoalId, setEditingGoalId] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState<{ title: string; target_count: number; target_date: string | null }>({ title: '', target_count: 1, target_date: null });
+  const [editForm, setEditForm] = useState<{
+    title: string;
+    target_count: number;
+    target_date: string | null;
+  }>({ title: "", target_count: 1, target_date: null });
 
   const handleIncrement = async (goalId: string) => {
     setLoadingGoalId(goalId);
@@ -24,8 +29,8 @@ export default function GoalsSectionClient({ goals }: { goals: Goal[] }) {
     } else {
       setLocalGoals((prev) =>
         prev.map((g) =>
-          g.id === goalId ? { ...g, current_count: g.current_count + 1 } : g
-        )
+          g.id === goalId ? { ...g, current_count: g.current_count + 1 } : g,
+        ),
       );
     }
     setLoadingGoalId(null);
@@ -45,7 +50,7 @@ export default function GoalsSectionClient({ goals }: { goals: Goal[] }) {
     setEditForm({
       title: goal.title,
       target_count: goal.target_count,
-      target_date: goal.target_date || '',
+      target_date: goal.target_date || "",
     });
   };
 
@@ -53,7 +58,9 @@ export default function GoalsSectionClient({ goals }: { goals: Goal[] }) {
     setLoadingGoalId(goalId);
     const result = await editGoal(goalId, editForm);
     if (!result.error) {
-      setLocalGoals((prev) => prev.map((g) => g.id === goalId ? { ...g, ...editForm } : g));
+      setLocalGoals((prev) =>
+        prev.map((g) => (g.id === goalId ? { ...g, ...editForm } : g)),
+      );
       setEditingGoalId(null);
     }
     setLoadingGoalId(null);
@@ -61,107 +68,173 @@ export default function GoalsSectionClient({ goals }: { goals: Goal[] }) {
 
   // Only show goals that are not completed
   const activeGoals = localGoals.filter(
-    (goal) => goal.current_count < goal.target_count
+    (goal) => goal.current_count < goal.target_count,
   );
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <motion.div
+        className="flex items-center justify-between"
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         <h2 className="text-2xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
           Your Goals
         </h2>
         <div className="flex items-center space-x-2 text-sm text-slate-500">
-          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+          <motion.div
+            className="w-2 h-2 bg-green-500 rounded-full"
+            animate={{ scale: [1, 1.5, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
           <span>Active Goals</span>
         </div>
-      </div>
+      </motion.div>
       {activeGoals && activeGoals.length > 0 ? (
-        activeGoals.map((goal) => {
-          const progressPercentage = goal.target_count > 0 ? (goal.current_count / goal.target_count) * 100 : 0;
-          return (
-            <div key={goal.id} className="bg-gradient-to-r from-slate-50 to-white p-5 rounded-xl border border-slate-200 hover:shadow-md transition-shadow duration-200">
-              {editingGoalId === goal.id ? (
-                <div className="mb-3">
-                  <input
-                    className="mb-2 px-2 py-1 border rounded w-full text-gray-700"
-                    value={editForm.title}
-                    onChange={e => setEditForm(f => ({ ...f, title: e.target.value }))}
-                  />
-                  <input
-                    className="mb-2 px-2 py-1 border rounded w-full text-gray-700"
-                    type="number"
-                    value={editForm.target_count}
-                    onChange={e => setEditForm(f => ({ ...f, target_count: Number(e.target.value) }))}
-                  />
-                  <input
-                    className="mb-2 px-2 py-1 border rounded w-full text-gray-700"
-                    type="date"
-                    value={editForm.target_date || ''}
-                    onChange={e => setEditForm(f => ({ ...f, target_date: e.target.value }))}
-                  />
-                  <div className="flex gap-2">
-                    <button className="px-3 py-1 bg-green-500 text-white rounded" onClick={() => handleEditSave(goal.id)} disabled={loadingGoalId === goal.id}>Save</button>
-                    <button className="px-3 py-1 bg-gray-300 text-black rounded" onClick={() => setEditingGoalId(null)}>Cancel</button>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex justify-between items-start mb-3">
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-slate-800 text-lg">{goal.title}</h3>
-                    <div className="flex items-center space-x-2 mt-1">
-                      <span className="text-sm text-slate-600">
-                        {goal.current_count} of {goal.target_count} completed
-                      </span>
-                    </div>
-                  </div>
-                  <div className="text-right flex flex-col items-end gap-2">
-                    <div className="text-2xl font-bold text-slate-800">
-                      {Math.round(progressPercentage)}%
-                    </div>
-                    <div className="flex flex-row gap-2 mt-2">
+        <AnimatePresence mode="popLayout">
+          {activeGoals.map((goal) => {
+            const progressPercentage =
+              goal.target_count > 0
+                ? (goal.current_count / goal.target_count) * 100
+                : 0;
+            return (
+              <motion.div
+                key={goal.id}
+                layout
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, x: -100, transition: { duration: 0.3 } }}
+                whileHover={{
+                  scale: 1.02,
+                  boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
+                }}
+                className="bg-gradient-to-r from-slate-50 to-white p-5 rounded-xl border border-slate-200 transition-shadow duration-200"
+              >
+                {editingGoalId === goal.id ? (
+                  <div className="mb-3">
+                    <input
+                      className="mb-2 px-2 py-1 border rounded w-full text-gray-700"
+                      value={editForm.title}
+                      onChange={(e) =>
+                        setEditForm((f) => ({ ...f, title: e.target.value }))
+                      }
+                    />
+                    <input
+                      className="mb-2 px-2 py-1 border rounded w-full text-gray-700"
+                      type="number"
+                      value={editForm.target_count}
+                      onChange={(e) =>
+                        setEditForm((f) => ({
+                          ...f,
+                          target_count: Number(e.target.value),
+                        }))
+                      }
+                    />
+                    <input
+                      className="mb-2 px-2 py-1 border rounded w-full text-gray-700"
+                      type="date"
+                      value={editForm.target_date || ""}
+                      onChange={(e) =>
+                        setEditForm((f) => ({
+                          ...f,
+                          target_date: e.target.value,
+                        }))
+                      }
+                    />
+                    <div className="flex gap-2">
                       <button
+                        className="px-3 py-1 bg-green-500 text-white rounded"
+                        onClick={() => handleEditSave(goal.id)}
+                        disabled={loadingGoalId === goal.id}
+                      >
+                        Save
+                      </button>
+                      <button
+                        className="px-3 py-1 bg-gray-300 text-black rounded"
+                        onClick={() => setEditingGoalId(null)}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-slate-800 text-lg">
+                        {goal.title}
+                      </h3>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <span className="text-sm text-slate-600">
+                          {goal.current_count} of {goal.target_count} completed
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex flex-row gap-2">
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                         className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-300"
                         disabled={loadingGoalId === goal.id}
                         onClick={() => handleIncrement(goal.id)}
                       >
-                        {loadingGoalId === goal.id ? 'Updating...' : '+1'}
-                      </button>
-                      <button
+                        {loadingGoalId === goal.id ? "Updating..." : "+1"}
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                         className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 disabled:bg-gray-300"
                         disabled={loadingGoalId === goal.id}
                         onClick={() => handleEdit(goal)}
                       >
                         Edit
-                      </button>
-                      <button
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.1, rotate: 5 }}
+                        whileTap={{ scale: 0.9 }}
                         className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 disabled:bg-gray-300"
                         disabled={loadingGoalId === goal.id}
                         onClick={() => handleDelete(goal.id)}
                       >
                         Delete
-                      </button>
+                      </motion.button>
                     </div>
                   </div>
+                )}
+                <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
+                  <motion.div
+                    className="h-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-500"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${Math.min(progressPercentage, 100)}%` }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
+                  />
                 </div>
-              )}
-              <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
-                <div
-                  className={`h-3 rounded-full transition-all duration-500 bg-gradient-to-r from-blue-500 to-purple-500`}
-                  style={{ width: `${Math.min(progressPercentage, 100)}%` }}
-                ></div>
-              </div>
-            </div>
-          );
-        })
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
       ) : (
-        <div className="text-center py-12 px-6 bg-gradient-to-r from-slate-50 to-white rounded-xl border border-slate-200">
-          <div className="w-16 h-16 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <motion.div
+          className="text-center py-12 px-6 bg-gradient-to-r from-slate-50 to-white rounded-xl border border-slate-200"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <motion.div
+            className="w-16 h-16 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-4"
+            animate={{ y: [0, -10, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
             <span className="text-2xl">🎯</span>
-          </div>
-          <h3 className="text-lg font-semibold text-slate-800 mb-2">No Active Goals</h3>
-          <p className="text-slate-600 mb-4">Set your next goal to start tracking your progress!</p>
-        </div>
+          </motion.div>
+          <h3 className="text-lg font-semibold text-slate-800 mb-2">
+            No Active Goals
+          </h3>
+          <p className="text-slate-600 mb-4">
+            Set your next goal to start tracking your progress!
+          </p>
+        </motion.div>
       )}
     </div>
   );
-} 
+}

@@ -36,23 +36,32 @@
 //   );
 // };
 
-// export default Header; 
+// export default Header;
 
-
-import Link from 'next/link';
-import LogoutButton from './LogoutButton';
-import AuthButtons from './AuthButtons';
+"use client";
+import Link from "next/link";
+import LogoutButton from "./LogoutButton";
+import AuthButtons from "./AuthButtons";
+import { motion } from "framer-motion";
 
 const Header = () => {
   return (
-    <header className="bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-lg border-b border-slate-700">
+    <motion.header
+      className="bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-lg border-b border-slate-700"
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
+    >
       <div className="container mx-auto flex justify-between items-center px-6 py-4">
-        
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-3 group">
-          <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+          <motion.div
+            className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center"
+            whileHover={{ scale: 1.1, rotate: 5 }}
+            transition={{ duration: 0.2 }}
+          >
             <span className="text-sm font-bold text-white">CP</span>
-          </div>
+          </motion.div>
           <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
             CP Tracker
           </span>
@@ -61,37 +70,37 @@ const Header = () => {
         {/* Navigation */}
         <nav>
           <ul className="flex space-x-8">
-            <li>
-              <Link 
-                href="/" 
-                className="text-gray-300 hover:text-white hover:bg-white/10 px-3 py-2 rounded-md transition-all duration-200 font-medium"
+            {[
+              { href: "/", label: "Dashboard" },
+              { href: "/problems", label: "Problems" },
+              { href: "/ratings", label: "Ratings" },
+              { href: "/profile", label: "Profile" },
+            ].map((item, index) => (
+              <motion.li
+                key={item.href}
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
               >
-                Dashboard
-              </Link>
-            </li>
-            <li>
-              <Link 
-                href="/problems" 
-                className="text-gray-300 hover:text-white hover:bg-white/10 px-3 py-2 rounded-md transition-all duration-200 font-medium"
-              >
-                Problems
-              </Link>
-            </li>
-            <li>
-              <Link 
-                href="/profile" 
-                className="text-gray-300 hover:text-white hover:bg-white/10 px-3 py-2 rounded-md transition-all duration-200 font-medium"
-              >
-                Profile
-              </Link>
-            </li>
-            <li>
+                <Link
+                  href={item.href}
+                  className="text-gray-300 hover:text-white hover:bg-white/10 px-3 py-2 rounded-md transition-all duration-200 font-medium"
+                >
+                  {item.label}
+                </Link>
+              </motion.li>
+            ))}
+            <motion.li
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.3 }}
+            >
               <AuthButtons />
-            </li>
+            </motion.li>
           </ul>
         </nav>
       </div>
-    </header>
+    </motion.header>
   );
 };
 
