@@ -2,8 +2,9 @@
 import LoginForm from "@/components/auth/login-form";
 import { motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
-export default function LoginPage() {
+function LoginContent() {
   const searchParams = useSearchParams();
   const message = searchParams.get("message");
 
@@ -27,5 +28,17 @@ export default function LoginPage() {
         </motion.p>
       )}
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex justify-center items-center h-full min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+        <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }
