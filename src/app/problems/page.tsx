@@ -19,32 +19,27 @@ export default function ProblemsPage() {
         data: { user },
       } = await supabase.auth.getUser();
 
-      if (!user) {
-        router.push(
-          "/auth/login?message=You must be logged in to view this page",
-        );
-        return;
-      }
-
       setUser(user);
 
-      const { data: problems, error } = await supabase
-        .from("problems")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
+      if (user) {
+        const { data: problems, error } = await supabase
+          .from("problems")
+          .select("*")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false });
 
-      if (error) {
-        console.error("Error fetching problems:", error);
-      } else {
-        setProblems(problems || []);
+        if (error) {
+          console.error("Error fetching problems:", error);
+        } else {
+          setProblems(problems || []);
+        }
       }
 
       setLoading(false);
     };
 
     fetchData();
-  }, [router]);
+  }, []);
 
   if (loading) {
     return (
@@ -87,24 +82,64 @@ export default function ProblemsPage() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <Link
-              href="/problems/add"
-              className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center space-x-2"
-            >
-              <motion.span
-                className="text-lg"
-                whileHover={{ rotate: 90 }}
-                transition={{ duration: 0.2 }}
+            {user ? (
+              <Link
+                href="/problems/add"
+                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center space-x-2"
               >
-                +
-              </motion.span>
-              <span>Add Problem</span>
-            </Link>
+                <motion.span
+                  className="text-lg"
+                  whileHover={{ rotate: 90 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  +
+                </motion.span>
+                <span>Add Problem</span>
+              </Link>
+            ) : (
+              <Link
+                href="/auth/login"
+                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center space-x-2"
+              >
+                <span>Sign In</span>
+              </Link>
+            )}
           </motion.div>
         </motion.div>
 
         {/* Problems List */}
-        {problems && problems.length > 0 ? (
+        {!user ? (
+          <motion.div
+            className="text-center py-16 px-6 bg-white rounded-xl shadow-lg border border-slate-200"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            <motion.div
+              className="w-20 h-20 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6"
+              animate={{ y: [0, -10, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <span className="text-4xl">🔐</span>
+            </motion.div>
+            <h3 className="text-2xl font-bold text-slate-800 mb-3">
+              Login to Track Your Problems
+            </h3>
+            <p className="text-slate-600 mb-8 max-w-md mx-auto">
+              Sign in to start tracking your competitive programming problems, add notes, and monitor your progress across platforms!
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Link
+                  href="/auth/login"
+                  className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+                >
+                  <span>Sign In</span>
+                </Link>
+              </motion.div>
+            </div>
+          </motion.div>
+        ) : problems && problems.length > 0 ? (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

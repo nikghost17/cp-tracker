@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import CodeforcesProfile from "@/components/platforms/CodeforcesProfile";
 import LeetCodeProfile from "@/components/platforms/LeetCodeProfile";
 import CodeChefProfile from "@/components/platforms/CodeChefProfile";
@@ -20,27 +21,23 @@ export default function RatingsPage() {
         data: { user },
       } = await supabase.auth.getUser();
 
-      if (!user) {
-        router.push(
-          "/auth/login?message=You must be logged in to view this page",
-        );
-        return;
-      }
-
       setUser(user);
 
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .single();
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", user.id)
+          .single();
 
-      setProfile(profile);
+        setProfile(profile);
+      }
+      
       setLoading(false);
     };
 
     fetchData();
-  }, [router]);
+  }, []);
 
   if (loading) {
     return (
@@ -77,7 +74,36 @@ export default function RatingsPage() {
           </p>
         </motion.div>
 
-        {!hasAnyHandle ? (
+        {!user ? (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6 }}
+            className="text-center py-20 bg-white rounded-xl shadow-lg border border-slate-200 max-w-3xl mx-auto"
+          >
+            <motion.div
+              animate={{ y: [0, -10, 0], rotate: [0, 5, -5, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="w-24 h-24 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6"
+            >
+              <span className="text-5xl">📊</span>
+            </motion.div>
+            <h3 className="text-3xl font-bold text-slate-800 mb-4">
+              View Your Ratings
+            </h3>
+            <p className="text-slate-600 mb-8 max-w-md mx-auto text-lg">
+              Sign in to connect your Codeforces, LeetCode, and CodeChef accounts and track all your ratings in one place!
+            </p>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Link
+                href="/auth/login"
+                className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+              >
+                <span>Sign In to View Ratings</span>
+              </Link>
+            </motion.div>
+          </motion.div>
+        ) : !hasAnyHandle ? (
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}

@@ -18,20 +18,18 @@ export default function ProfilePage() {
         data: { user },
       } = await supabase.auth.getUser();
 
-      if (!user) {
-        redirect("/auth/login?message=You must be logged in to view this page");
-        return;
-      }
-
       setUser(user);
 
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .single();
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", user.id)
+          .single();
 
-      setProfile(profile);
+        setProfile(profile);
+      }
+      
       setLoading(false);
     };
 
@@ -51,6 +49,69 @@ export default function ProfilePage() {
   }
 
   const hasHandles = profile?.codeforces_handle || profile?.leetcode_handle || profile?.codechef_handle;
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-8">
+        <div className="container mx-auto px-6 max-w-4xl">
+          <motion.div
+            className="text-center py-20 px-6 bg-white rounded-xl shadow-lg border border-slate-200"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6 }}
+          >
+            <motion.div
+              className="w-24 h-24 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6"
+              animate={{ y: [0, -10, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <span className="text-5xl">👤</span>
+            </motion.div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent mb-4">
+              Profile Settings
+            </h1>
+            <p className="text-slate-600 mb-8 text-lg max-w-lg mx-auto">
+              Sign in to manage your profile, connect your coding platform handles, and track your competitive programming journey!
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Link
+                  href="/auth/login"
+                  className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+                >
+                  <span>Sign In</span>
+                </Link>
+              </motion.div>
+            </div>
+
+            {/* Feature Preview */}
+            <motion.div
+              className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
+              <div className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg">
+                <div className="text-3xl mb-2">🔗</div>
+                <h3 className="font-semibold text-slate-800 mb-1">Connect Platforms</h3>
+                <p className="text-sm text-slate-600">Link your Codeforces, LeetCode, and CodeChef accounts</p>
+              </div>
+              <div className="p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg">
+                <div className="text-3xl mb-2">📊</div>
+                <h3 className="font-semibold text-slate-800 mb-1">Track Ratings</h3>
+                <p className="text-sm text-slate-600">Monitor your progress across all platforms</p>
+              </div>
+              <div className="p-4 bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-lg">
+                <div className="text-3xl mb-2">🎯</div>
+                <h3 className="font-semibold text-slate-800 mb-1">Set Goals</h3>
+                <p className="text-sm text-slate-600">Create and track your competitive programming goals</p>
+              </div>
+            </motion.div>
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-8">
