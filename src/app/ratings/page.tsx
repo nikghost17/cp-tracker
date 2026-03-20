@@ -32,7 +32,7 @@ export default function RatingsPage() {
 
         setProfile(profile);
       }
-      
+
       setLoading(false);
     };
 
@@ -92,7 +92,8 @@ export default function RatingsPage() {
               View Your Ratings
             </h3>
             <p className="text-slate-600 mb-8 max-w-md mx-auto text-lg">
-              Sign in to connect your Codeforces, LeetCode, and CodeChef accounts and track all your ratings in one place!
+              Sign in to connect your Codeforces, LeetCode, and CodeChef
+              accounts and track all your ratings in one place!
             </p>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link

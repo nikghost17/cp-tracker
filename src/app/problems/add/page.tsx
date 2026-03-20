@@ -75,4 +75,4 @@ export default function AddProblemPage() {
       <AddProblemForm />
     </div>
   );
-} 
+}

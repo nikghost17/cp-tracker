@@ -126,10 +126,14 @@ export default function ProblemsPage() {
               Login to Track Your Problems
             </h3>
             <p className="text-slate-600 mb-8 max-w-md mx-auto">
-              Sign in to start tracking your competitive programming problems, add notes, and monitor your progress across platforms!
+              Sign in to start tracking your competitive programming problems,
+              add notes, and monitor your progress across platforms!
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
                 <Link
                   href="/auth/login"
                   className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-200"

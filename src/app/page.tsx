@@ -105,23 +105,39 @@ export default function Home() {
                   Start Your Journey Today
                 </h2>
                 <p className="text-slate-600 mb-6 max-w-md mx-auto">
-                  Sign in to unlock powerful features and take your competitive programming to the next level!
+                  Sign in to unlock powerful features and take your competitive
+                  programming to the next level!
                 </p>
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
                   <Link
                     href="/auth/login"
                     className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
                   >
                     <span>Get Started</span>
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M13 7l5 5m0 0l-5 5m5-5H6"
+                      />
                     </svg>
                   </Link>
                 </motion.div>
               </div>
-              
+
               <div className="p-8">
-                <h3 className="text-lg font-semibold text-slate-800 mb-6 text-center">What You Can Do</h3>
+                <h3 className="text-lg font-semibold text-slate-800 mb-6 text-center">
+                  What You Can Do
+                </h3>
                 <div className="grid md:grid-cols-2 gap-6">
                   <motion.div
                     className="flex gap-4 p-4 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100"
@@ -129,41 +145,61 @@ export default function Home() {
                   >
                     <div className="text-3xl">🎯</div>
                     <div>
-                      <h4 className="font-semibold text-slate-800 mb-1">Track Goals</h4>
-                      <p className="text-sm text-slate-600">Set and monitor your competitive programming goals with progress tracking</p>
+                      <h4 className="font-semibold text-slate-800 mb-1">
+                        Track Goals
+                      </h4>
+                      <p className="text-sm text-slate-600">
+                        Set and monitor your competitive programming goals with
+                        progress tracking
+                      </p>
                     </div>
                   </motion.div>
-                  
+
                   <motion.div
                     className="flex gap-4 p-4 rounded-lg bg-gradient-to-br from-purple-50 to-purple-100"
                     whileHover={{ x: 5 }}
                   >
                     <div className="text-3xl">📝</div>
                     <div>
-                      <h4 className="font-semibold text-slate-800 mb-1">Problem Tracker</h4>
-                      <p className="text-sm text-slate-600">Keep notes and track all problems you've solved across platforms</p>
+                      <h4 className="font-semibold text-slate-800 mb-1">
+                        Problem Tracker
+                      </h4>
+                      <p className="text-sm text-slate-600">
+                        Keep notes and track all problems you've solved across
+                        platforms
+                      </p>
                     </div>
                   </motion.div>
-                  
+
                   <motion.div
                     className="flex gap-4 p-4 rounded-lg bg-gradient-to-br from-indigo-50 to-indigo-100"
                     whileHover={{ x: 5 }}
                   >
                     <div className="text-3xl">📊</div>
                     <div>
-                      <h4 className="font-semibold text-slate-800 mb-1">Rating Insights</h4>
-                      <p className="text-sm text-slate-600">View your ratings from Codeforces, LeetCode, and CodeChef in one place</p>
+                      <h4 className="font-semibold text-slate-800 mb-1">
+                        Rating Insights
+                      </h4>
+                      <p className="text-sm text-slate-600">
+                        View your ratings from Codeforces, LeetCode, and
+                        CodeChef in one place
+                      </p>
                     </div>
                   </motion.div>
-                  
+
                   <motion.div
                     className="flex gap-4 p-4 rounded-lg bg-gradient-to-br from-pink-50 to-pink-100"
                     whileHover={{ x: 5 }}
                   >
                     <div className="text-3xl">🔗</div>
                     <div>
-                      <h4 className="font-semibold text-slate-800 mb-1">Multi-Platform</h4>
-                      <p className="text-sm text-slate-600">Connect and manage multiple coding platform profiles seamlessly</p>
+                      <h4 className="font-semibold text-slate-800 mb-1">
+                        Multi-Platform
+                      </h4>
+                      <p className="text-sm text-slate-600">
+                        Connect and manage multiple coding platform profiles
+                        seamlessly
+                      </p>
                     </div>
                   </motion.div>
                 </div>
