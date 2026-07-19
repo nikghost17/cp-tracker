@@ -74,6 +74,7 @@ const Header = () => {
               { href: "/", label: "Dashboard" },
               { href: "/problems", label: "Problems" },
               { href: "/ratings", label: "Ratings" },
+              { href: "/friends", label: "Friends" },
               { href: "/profile", label: "Profile" },
             ].map((item, index) => (
               <motion.li
