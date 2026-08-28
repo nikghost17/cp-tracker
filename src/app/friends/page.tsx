@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { motion } from "framer-motion";
 import FriendSearch from "@/components/friends/FriendSearch";
 import FriendsList from "@/components/friends/FriendsList";
@@ -13,10 +12,8 @@ export default function FriendsPage() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const res = await fetch("/api/me");
+      const { user } = await res.json();
       setUser(user);
       setLoading(false);
     };

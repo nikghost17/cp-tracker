@@ -1,14 +1,14 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { auth } from '@/lib/auth'
 import { revalidatePath } from 'next/cache'
+import connectDB from '@/lib/mongodb'
+import User from '@/lib/models/User'
 
 export async function updateProfile(formData: FormData) {
-    const supabase = await createClient()
+    const session = await auth()
 
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) {
+    if (!session?.user?.id) {
         return { error: 'You must be logged in to update your profile' }
     }
 
@@ -21,12 +21,14 @@ export async function updateProfile(formData: FormData) {
         codechef_handle: formData.get('codechef_handle') as string,
     }
 
-    const { error } = await supabase.from('profiles').update(profileData).eq('id', user.id)
+    await connectDB()
 
-    if (error) {
+    const result = await User.findByIdAndUpdate(session.user.id, profileData, { new: true })
+
+    if (!result) {
         return { error: 'Could not update profile' }
     }
 
     revalidatePath('/profile')
     return { error: null }
-} 
+}

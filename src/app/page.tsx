@@ -3,7 +3,6 @@ import GoalsSectionClient from "@/components/dashboard/GoalsSectionClient";
 import AddGoalForm from "@/components/dashboard/AddGoalForm";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 
 export default function Home() {
@@ -13,21 +12,14 @@ export default function Home() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const [meRes, goalsRes] = await Promise.all([
+        fetch("/api/me"),
+        fetch("/api/goals"),
+      ]);
+      const { user } = await meRes.json();
+      const { goals } = await goalsRes.json();
       setUser(user);
-
-      if (user) {
-        const { data: goals } = await supabase
-          .from("goals")
-          .select("*")
-          .eq("user_id", user.id)
-          .order("target_date", { ascending: true, nullsFirst: false });
-        setGoals(goals || []);
-      }
-
+      setGoals(goals || []);
       setLoading(false);
     };
     fetchData();

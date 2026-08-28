@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import CodeforcesProfile from "@/components/platforms/CodeforcesProfile";
 import LeetCodeProfile from "@/components/platforms/LeetCodeProfile";
 import CodeChefProfile from "@/components/platforms/CodeChefProfile";
-import { createClient } from "@/lib/supabase/client";
 
 interface FriendSearchProps {
   user: any;
@@ -69,19 +68,18 @@ export default function FriendSearch({ user, onFriendAdded }: FriendSearchProps)
     setSaving(true);
     setSaveError(null);
     try {
-      const supabase = createClient();
-      const { error } = await supabase.from("friends").insert({
-        user_id: user.id,
-        nickname: nickname.trim() || searchedHandle,
-        platform: searchedPlatform,
-        handle: searchedHandle,
+      const res = await fetch("/api/friends", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nickname: nickname.trim() || searchedHandle,
+          platform: searchedPlatform,
+          handle: searchedHandle,
+        }),
       });
-      if (error) {
-        if (error.code === "23505") {
-          setSaveError("This friend is already in your list!");
-        } else {
-          throw error;
-        }
+      const data = await res.json();
+      if (!res.ok) {
+        setSaveError(data.error || "Failed to save friend");
       } else {
         setSaveSuccess(true);
         setShowSaveModal(false);

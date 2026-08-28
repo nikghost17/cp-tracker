@@ -1,8 +1,13 @@
 'use client'
 
 import { updateProfile } from '@/app/profile/actions'
-import { type User } from '@supabase/supabase-js'
 import { useEffect, useState } from 'react'
+
+interface User {
+  id: string;
+  email?: string | null;
+  name?: string | null;
+}
 
 interface Profile {
   id: string;

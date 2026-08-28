@@ -1,29 +1,14 @@
 "use client";
-import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import LogoutButton from "./LogoutButton";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSession } from "next-auth/react";
 
 export default function AuthButtons() {
-  const [loggedIn, setLoggedIn] = useState<null | boolean>(null);
+  const { data: session, status } = useSession();
+  const loggedIn = status === "authenticated";
 
-  useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => {
-      setLoggedIn(!!data?.user);
-    });
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setLoggedIn(!!session?.user);
-      },
-    );
-    return () => {
-      listener?.subscription.unsubscribe();
-    };
-  }, []);
-
-  if (loggedIn === null) {
+  if (status === "loading") {
     return (
       <motion.div
         className="ml-4"

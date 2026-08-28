@@ -1,120 +1,119 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { auth } from '@/lib/auth'
 import { revalidatePath } from 'next/cache'
+import connectDB from '@/lib/mongodb'
+import Goal from '@/lib/models/Goal'
 
 export async function addGoal(formData: FormData) {
-    const supabase = await createClient()
-
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
+    const session = await auth()
+    if (!session?.user?.id) {
         return { error: 'You must be logged in to add a goal.' }
     }
 
-    const title = formData.get('title') as string;
-    const targetCount = formData.get('target_count') as string;
-    const targetDate = formData.get('target_date') as string || null; // Can be optional
+    const title = formData.get('title') as string
+    const targetCount = formData.get('target_count') as string
+    const targetDate = formData.get('target_date') as string || null
 
-    const parsedTargetCount = parseInt(targetCount, 10);
+    const parsedTargetCount = parseInt(targetCount, 10)
 
     if (!title || isNaN(parsedTargetCount) || parsedTargetCount <= 0) {
-        return { error: 'A valid title and target count are required.' };
+        return { error: 'A valid title and target count are required.' }
     }
 
-    const { error } = await supabase.from('goals').insert({
+    await connectDB()
+
+    await Goal.create({
+        user_id: session.user.id,
         title,
         target_count: parsedTargetCount,
-        target_date: targetDate,
-        user_id: user.id,
-    });
+        current_count: 0,
+        target_date: targetDate ? new Date(targetDate) : null,
+    })
 
-    if (error) {
-        console.error('Error inserting goal:', error);
-        return { error: 'Database error: Could not add the goal.' };
-    }
-
-    // A goal is added on the main page, so revalidate that path.
-    revalidatePath('/');
-
-    // Return success
-    return { error: null };
+    revalidatePath('/')
+    return { error: null }
 }
 
 export async function incrementGoal(goalId: string) {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-        if (typeof window !== 'undefined') alert('You must be logged in to increment a goal.');
-        return { error: 'You must be logged in to increment a goal.' };
+    const session = await auth()
+    if (!session?.user?.id) {
+        return { error: 'You must be logged in to increment a goal.' }
     }
+
+    await connectDB()
+
     // Increment current_count by 1
-    const { error: incError } = await supabase.rpc('increment_goal_count', { goal_id: goalId });
-    if (incError) {
-        if (typeof window !== 'undefined') alert('Database error: Could not increment the goal.');
-        console.error('Error incrementing goal:', incError);
-        return { error: incError.message || 'Database error: Could not increment the goal.' };
+    const goal = await Goal.findOneAndUpdate(
+        { _id: goalId, user_id: session.user.id },
+        { $inc: { current_count: 1 } },
+        { new: true }
+    )
+
+    if (!goal) {
+        return { error: 'Goal not found.' }
     }
-    // Fetch the updated goal
-    const { data: goal, error: fetchError } = await supabase
-        .from('goals')
-        .select('id, current_count, target_count')
-        .eq('id', goalId)
-        .single();
-    if (fetchError) {
-        console.error('Error fetching updated goal:', fetchError);
-        return { error: fetchError.message || 'Could not fetch updated goal.' };
-    }
-    // If completed, delete the goal
+
+    // If completed, delete it
     if (goal.current_count >= goal.target_count) {
-        const { error: delError } = await supabase
-            .from('goals')
-            .delete()
-            .eq('id', goalId);
-        if (delError) {
-            console.error('Error deleting completed goal:', delError);
-            return { error: delError.message || 'Could not delete completed goal.' };
-        }
-        return { error: null, deleted: true };
+        await Goal.findByIdAndDelete(goalId)
+        revalidatePath('/')
+        return { error: null, deleted: true }
     }
-    return { error: null, deleted: false };
+
+    revalidatePath('/')
+    return { error: null, deleted: false }
 }
 
 export async function deleteGoal(goalId: string) {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-        if (typeof window !== 'undefined') alert('You must be logged in to delete a goal.');
-        return { error: 'You must be logged in to delete a goal.' };
+    const session = await auth()
+    if (!session?.user?.id) {
+        return { error: 'You must be logged in to delete a goal.' }
     }
-    const { error } = await supabase
-        .from('goals')
-        .delete()
-        .eq('id', goalId)
-        .eq('user_id', user.id);
-    if (error) {
-        if (typeof window !== 'undefined') alert('Database error: Could not delete the goal.');
-        console.error('Error deleting goal:', error);
-        return { error: error.message || 'Database error: Could not delete the goal.' };
+
+    await connectDB()
+
+    const result = await Goal.findOneAndDelete({
+        _id: goalId,
+        user_id: session.user.id,
+    })
+
+    if (!result) {
+        return { error: 'Goal not found or unauthorized.' }
     }
-    return { error: null };
+
+    revalidatePath('/')
+    return { error: null }
 }
 
-export async function editGoal(goalId: string, updates: { title?: string; target_count?: number; target_date?: string | null }) {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-        if (typeof window !== 'undefined') alert('You must be logged in to edit a goal.');
-        return { error: 'You must be logged in to edit a goal.' };
+export async function editGoal(
+    goalId: string,
+    updates: { title?: string; target_count?: number; target_date?: string | null }
+) {
+    const session = await auth()
+    if (!session?.user?.id) {
+        return { error: 'You must be logged in to edit a goal.' }
     }
-    const { error } = await supabase
-        .from('goals')
-        .update(updates)
-        .eq('id', goalId)
-        .eq('user_id', user.id);
-    if (error) {
-        if (typeof window !== 'undefined') alert('Database error: Could not edit the goal.');
-        console.error('Error editing goal:', error);
-        return { error: error.message || 'Database error: Could not edit the goal.' };
+
+    await connectDB()
+
+    const updateData: any = {}
+    if (updates.title !== undefined) updateData.title = updates.title
+    if (updates.target_count !== undefined) updateData.target_count = updates.target_count
+    if (updates.target_date !== undefined) {
+        updateData.target_date = updates.target_date ? new Date(updates.target_date) : null
     }
-    return { error: null };
-} 
+
+    const result = await Goal.findOneAndUpdate(
+        { _id: goalId, user_id: session.user.id },
+        updateData,
+        { new: true }
+    )
+
+    if (!result) {
+        return { error: 'Goal not found or unauthorized.' }
+    }
+
+    revalidatePath('/')
+    return { error: null }
+}

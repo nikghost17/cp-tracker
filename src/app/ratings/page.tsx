@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -16,23 +15,14 @@ export default function RatingsPage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
+      const [meRes, profileRes] = await Promise.all([
+        fetch("/api/me"),
+        fetch("/api/profile"),
+      ]);
+      const { user } = await meRes.json();
+      const { profile } = await profileRes.json();
       setUser(user);
-
-      if (user) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", user.id)
-          .single();
-
-        setProfile(profile);
-      }
-
+      setProfile(profile);
       setLoading(false);
     };
 

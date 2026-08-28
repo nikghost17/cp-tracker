@@ -1,24 +1,33 @@
-import { createClient } from '@/lib/supabase/server';
+import { auth } from '@/lib/auth';
+import connectDB from '@/lib/mongodb';
+import Goal from '@/lib/models/Goal';
 import AddGoalForm from './AddGoalForm';
 import GoalsSectionClient from './GoalsSectionClient';
 
 const GoalsSection = async () => {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const session = await auth();
 
-    if (!user) {
+    if (!session?.user?.id) {
         return null;
     }
 
-    const { data: goals } = await supabase
-        .from('goals')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('target_date', { ascending: true, nullsFirst: false });
+    await connectDB();
+    const goalsRaw = await Goal.find({ user_id: session.user.id })
+        .sort({ target_date: 1 })
+        .lean();
+
+    const goals = goalsRaw.map((g: any) => ({
+        ...g,
+        id: g._id.toString(),
+        _id: g._id.toString(),
+        user_id: g.user_id.toString(),
+        target_date: g.target_date ? g.target_date.toISOString() : null,
+        created_at: g.created_at ? g.created_at.toISOString() : null,
+    }));
 
     return (
         <div>
-            <GoalsSectionClient goals={goals || []} />
+            <GoalsSectionClient goals={goals} />
             <div className="pt-6 border-t border-slate-200">
                 <AddGoalForm />
             </div>

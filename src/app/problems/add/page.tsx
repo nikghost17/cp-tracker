@@ -1,6 +1,5 @@
 "use client";
 import AddProblemForm from "@/components/problems/add-problem-form";
-import { createClient } from "@/lib/supabase/client";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -11,10 +10,8 @@ export default function AddProblemPage() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const res = await fetch("/api/me");
+      const { user } = await res.json();
       setUser(user);
       setLoading(false);
     };

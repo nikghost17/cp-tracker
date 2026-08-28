@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import CodeforcesProfile from "@/components/platforms/CodeforcesProfile";
 import LeetCodeProfile from "@/components/platforms/LeetCodeProfile";
 import CodeChefProfile from "@/components/platforms/CodeChefProfile";
-import { createClient } from "@/lib/supabase/client";
 
 interface Friend {
   id: string;
@@ -71,12 +70,8 @@ export default function FriendCard({ friend, onRemove }: FriendCardProps) {
   const handleRemove = async () => {
     setRemoving(true);
     try {
-      const supabase = createClient();
-      const { error } = await supabase
-        .from("friends")
-        .delete()
-        .eq("id", friend.id);
-      if (error) throw error;
+      const res = await fetch(`/api/friends?id=${friend.id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error('Failed to remove friend');
       onRemove(friend.id);
     } catch {
       setRemoving(false);

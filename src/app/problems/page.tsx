@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import ProblemsTableClient from "@/components/problems/ProblemsTableClient";
@@ -14,27 +13,14 @@ export default function ProblemsPage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
+      const [meRes, problemsRes] = await Promise.all([
+        fetch("/api/me"),
+        fetch("/api/problems"),
+      ]);
+      const { user } = await meRes.json();
+      const { problems } = await problemsRes.json();
       setUser(user);
-
-      if (user) {
-        const { data: problems, error } = await supabase
-          .from("problems")
-          .select("*")
-          .eq("user_id", user.id)
-          .order("created_at", { ascending: false });
-
-        if (error) {
-          console.error("Error fetching problems:", error);
-        } else {
-          setProblems(problems || []);
-        }
-      }
-
+      setProblems(problems || []);
       setLoading(false);
     };
 

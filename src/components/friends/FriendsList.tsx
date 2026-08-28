@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { createClient } from "@/lib/supabase/client";
 import FriendCard from "./FriendCard";
 import Link from "next/link";
 
@@ -31,15 +30,9 @@ export default function FriendsList({ user, refreshTrigger }: FriendsListProps) 
     }
     setLoading(true);
     try {
-      const supabase = createClient();
-      const { data, error } = await supabase
-        .from("friends")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      setFriends(data || []);
+      const res = await fetch("/api/friends");
+      const { friends } = await res.json();
+      setFriends(friends || []);
     } catch {
       setFriends([]);
     } finally {
