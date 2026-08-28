@@ -83,7 +83,7 @@ export default function ProfileForm({ user, profile }: { user: User, profile: Pr
               <input 
                 id="email" 
                 type="text" 
-                value={user.email} 
+                value={user.email ?? ''} 
                 disabled 
                 className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-500 cursor-not-allowed"
               />
